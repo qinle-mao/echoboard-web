@@ -1,0 +1,69 @@
+// ---------- colors ---------- //
+// global colors
+@primary-color: #593bf0;
+@secondary-color: #f6952d;
+@link-color: #1890ff;
+@success-color: #22bf87;
+@warning-color: #f67770;
+@error-color: #f35248;
+@liked-color: #ed6e65;
+// neutral colors
+@gray-0: #202020;
+@gray-1: #5b5b5b;
+@gray-2: #949494;
+@gray-3: #bababa;
+@gray-8: #f6f6fb;
+@gray-9: #ffffff;
+
+// ---------- fonts ---------- //
+@font-size-global: 14px;
+@font-size-logo: 20px;
+@font-size-title: 56px;
+
+// ---------- transition time ---------- //
+@ttime: all 0.3s;
+
+// ---------- heights ---------- //
+@topbar-height: 52px;
+@footbar-height: 200px;
+@board-label-height: 28px;
+@card-height: 240px;
+
+// ---------- width ---------- //
+@card-width: 300px;
+
+// ---------- global control ---------- //
+body{
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+    color: @gray-0;
+    font-size: @font-size-global;
+    background-color: @gray-9;
+    transition: all 0.3s;
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+p{
+    padding: 0;
+    margin: 0;
+}
+
+img{
+    padding: 0;
+    margin: 0;
+    display: block;
+}
+
+a{
+    text-decoration: none;
+    &:hover{
+        text-decoration: underline;
+    }
+}
+
+input, textarea{
+    outline: none;
+}
