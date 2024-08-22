@@ -16,7 +16,7 @@
                     <span class="value">{{ card.comments }}</span>
                 </div>
             </div>
-            <div class="name">{{ card.name }}</div>
+            <div class="new-name">{{ card.name }}</div>
         </div>
     </div>
 </template>
@@ -52,7 +52,7 @@ export default {
 @import '../assets/fonts/icons/iconfont.css';
 @font-face {
     font-family: message-font;
-    src: url('../assets/fonts/XiangJiaoDaJiangJunLingGanTi-2.ttf');
+    src: url('../assets/fonts/MiaoZi-GuoZhiTi-2.ttf');
 }
 .message-card {
     height: @card-height;
@@ -71,10 +71,9 @@ export default {
     .content {
         height: 140px;
         font-family: message-font;
-        font-size: 22px;
+        // font-size: 20px;
         color: @gray-0;
         text-align: justify;
-        cursor: pointer;
     }
 
     .foot {
@@ -94,11 +93,9 @@ export default {
                 padding-right: 8px;
                 display: flex;
                 align-items: center;
-                color: @gray-3;
+                color: @gray-2;
 
                 .value {
-                    font-family: message-font;
-                    font-size: 18px;
                     line-height: 16px;
                     padding-left: 4px;
                 }
@@ -117,9 +114,9 @@ export default {
             }
         }
 
-        .name {
+        .new-name {
             font-family: message-font;
-            font-size: 22px;
+            // font-size: 20px;
             color: @gray-2;
         }
     }

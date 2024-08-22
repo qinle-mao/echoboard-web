@@ -6,6 +6,6 @@ export const date_1 = (e) => {
     let day = date.getDate()
     if(day < 10) {day = '0' + day}
     if(month < 10) {month = '0' + month}
-    let newDate = year + '.' + month + '.' + day
+    let newDate = year + '/' + month + '/' + day
     return newDate
 }

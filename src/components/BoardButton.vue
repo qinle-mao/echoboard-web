@@ -20,6 +20,7 @@ export default {
 <style lang="less" scoped>
 .button {
     text-align: center;
+    cursor: pointer;
 }
 // button size
 .large {
@@ -40,7 +41,7 @@ export default {
     color: @gray-9;
 }
 .secondary {
-    background: @gray-9;
+    background: none;
     color: @gray-0;
     border: 1px, solid, @gray-0;
 }

@@ -7,34 +7,44 @@
             <p class="label" v-for="(e, index) in labels[id]" :key="index" :class="{labelSelected:currLabel==index}" @click="selectLabel(index)">{{ e }}</p>
         </div>
         <div class="card-list">
-            <message-card class="card" v-for="(e, index) in cards" :key="index" :message="e"></message-card>
+            <message-card class="card" v-for="(e, index) in cards" :key="index" :message="e" :class="{cardSelected:cardSelected==index}" @click="selectCard(index)"></message-card>
         </div>
-        <div class="add-button" :style="{bottom:addBottomMargin + 'px'}">
+        <div class="add-button" :style="{bottom:addBottomMargin + 'px'}" @click="switchPopUp">
             <span class="iconfont icon-add"></span>
         </div>
-        <pop-up></pop-up>
+        <pop-up :title="title" :isPopUp=isPopUp @close="switchPopUp">
+            <create-card :id="id" @close="switchPopUp" v-if="cardSelected==-1"></create-card>
+            <card-detail :message="cards[cardSelected]" v-if="cardSelected!=-1"></card-detail>
+        </pop-up>
     </div>
 </template>
   
 <script>
 import {boardType, labels} from '../utils/data';
-import messageCard from '../components/MessageCard.vue';
+import MessageCard from '../components/MessageCard.vue';
 import { messageCards } from '../../mock/index';
-import popUp from '../components/PopUp.vue'
+import PopUp from '../components/PopUp.vue';
+import CreateCard from '@/components/CreateCard.vue';
+import CardDetail from '@/components/CardDetail.vue';
 export default {
     data() {
         return {
             boardType,
             labels,
-            id:0,
-            currLabel:-1,
-            cards:messageCards.data,
-            addBottomMargin:30
+            id: 0,
+            currLabel: -1,
+            cards: messageCards.data,
+            addBottomMargin: 30,
+            title: '',
+            isPopUp: false,
+            cardSelected: -1
         }
     },
     components: {
-        messageCard,
-        popUp
+        MessageCard,
+        PopUp,
+        CreateCard,
+        CardDetail
     },
     methods: {
         selectLabel(e) {
@@ -49,6 +59,24 @@ export default {
             } else {
                 this.addBottomMargin = 30
             }
+        },
+        switchPopUp() {
+            if(this.isPopUp) {
+                this.cardSelected = -1
+            } else if(this.cardSelected == -1) {
+                this.title = '写留言'
+            } else {
+                this.title = '详情'
+            }
+            this.isPopUp = !this.isPopUp
+        },
+        selectCard(e) {
+            if (e == this.cardSelected) {
+                this.cardSelected = -1
+            } else {
+                this.cardSelected = e
+            }
+            this.switchPopUp()
         }
     },
     mounted() {
@@ -66,6 +94,7 @@ export default {
     min-height: 1000px;
     padding-top: @topbar-height;
     text-align: center;
+    font-size: @font-size-global;
 
     .title {
         font-size: @font-size-title;
@@ -102,13 +131,21 @@ export default {
 
     .card-list {
         width: 100%;
+        box-sizing: border-box;
+        padding: 20px;
         padding-top: 28px;
         display: grid;
-        grid-template-columns: repeat(auto-fill,minmax(@card-width, 1fr));
-        row-gap: 12px;
+        grid-template-columns: repeat(auto-fill, @card-width);
+        justify-content: space-between;
+        row-gap: 20px;
 
         .card {
             place-self: center;
+            cursor: pointer;
+        }
+
+        .cardSelected {
+            border: 1px solid @primary-color
         }
     }
 
@@ -123,6 +160,7 @@ export default {
         display: flex;
         justify-content: center;
         align-items: center;
+        cursor: pointer;
 
         transition: @ttime;
 

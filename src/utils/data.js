@@ -15,10 +15,24 @@ export const labels = [
 ]
 
 export const cardColors = [
-    'rgb(252, 175, 162, 0.35)',
-    'rgb(255, 227, 148, 0.35)',
-    'rgb(146, 230, 245, 0.35)',
-    'rgb(168, 237, 138, 0.35)',
-    'rgb(202, 167, 247, 0.35)',
-    'rgb(212, 212, 212, 0.35)',
+    'rgba(252, 175, 162, 0.35)',
+    'rgba(255, 227, 148, 0.35)',
+    'rgba(146, 230, 245, 0.35)',
+    'rgba(168, 237, 138, 0.35)',
+    'rgba(202, 167, 247, 0.35)',
+    'rgba(212, 212, 212, 0.35)',
+]
+
+export const cardColorsDark = [
+    'rgba(252, 175, 162, 1.0)',
+    'rgba(255, 227, 148, 1.0)',
+    'rgba(146, 230, 245, 1.0)',
+    'rgba(168, 237, 138, 1.0)',
+    'rgba(202, 167, 247, 1.0)',
+]
+
+export const coloredAvatars = [
+    'linear-gradient(180deg, #ffa9d9 0%, #e83d3d 100%)',
+    'linear-gradient(180deg, #c9aaff 0%, #6d3cf5 100%)',
+    'linear-gradient(180deg, #89fed8 0%, #18c997 100%)',
 ]
