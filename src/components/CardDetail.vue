@@ -11,7 +11,7 @@
             <board-button class="confirm" size="medium" cat="primary" disabled>提交</board-button>
         </div>
         <p class="comments-title">评论 {{ message.comments }}</p>
-        <div class="comment-list" v-for="(e, index) in comments" :key="index">
+        <div class="comment-list" v-for="(e, index) in getComments" :key="index">
             <div class="user-avatar" :style="{backgroundImage:coloredAvatars[e.avatarUrl]}"></div>
             <div class="comment-holder">
                 <div class="content-top">
@@ -35,7 +35,6 @@ export default {
         return {
             newComment: '',
             newName: '',
-            comments: comments.data, 
             coloredAvatars,
             date_1
         }
@@ -50,6 +49,11 @@ export default {
     props: {
         message: {
             default: {}
+        }
+    },
+    computed: {
+        getComments() {
+            return comments.data
         }
     }
 }

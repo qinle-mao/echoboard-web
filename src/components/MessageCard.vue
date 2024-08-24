@@ -1,5 +1,5 @@
 <template>
-    <div class="message-card" :style="{width:width, background: cardColors[card.imgUrl]}">
+    <div class="message-card" :style="{width:width, background: card.type==0?cardColors[card.imgUrl]:cardColors[5]}">
         <div class="top">
             <p class="time">{{ date_1(card.time) }}</p>
             <p class="label">{{ labels[card.type][card.label] }}</p>

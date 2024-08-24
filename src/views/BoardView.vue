@@ -6,45 +6,79 @@
             <p class="label" :class="{labelSelected:currLabel==-1}" @click="selectLabel(-1)">全部</p>
             <p class="label" v-for="(e, index) in labels[id]" :key="index" :class="{labelSelected:currLabel==index}" @click="selectLabel(index)">{{ e }}</p>
         </div>
-        <div class="card-list">
-            <message-card class="card" v-for="(e, index) in cards" :key="index" :message="e" :class="{cardSelected:cardSelected==index}" @click="selectCard(index)"></message-card>
+        <div class="message-list" v-if="id==0">
+            <message-card class="message" v-for="(e, index) in cards" :key="index" :message="e" :class="{cardSelected:cardSelected==index}" @click="selectCard(index)"></message-card>
+        </div>
+        <div class="image-list" v-if="id==1">
+            <image-card class="image" v-for="(e, index) in photos" :key="index" :content="e" @click="selectImage(index)"></image-card>
         </div>
         <div class="add-button" :style="{bottom:addBottomMargin + 'px'}" @click="switchPopUp">
             <span class="iconfont icon-add"></span>
         </div>
         <pop-up :title="title" :isPopUp=isPopUp @close="switchPopUp">
-            <create-card :id="id" @close="switchPopUp" v-if="cardSelected==-1"></create-card>
-            <card-detail :message="cards[cardSelected]" v-if="cardSelected!=-1"></card-detail>
+            <div v-if="id==0">
+                <create-card @close="switchPopUp" v-if="cardSelected==-1"></create-card>
+                <card-detail :message="cards[cardSelected]" v-if="cardSelected!=-1"></card-detail>
+            </div>
+            <div v-if="id==1">
+                <create-photo @close="switchPopUp" v-if="imgSelected==-1"></create-photo>
+                <card-detail :message="photos[imgSelected]" v-if="imgSelected!=-1"></card-detail>
+            </div>
         </pop-up>
+        <image-viewer :imgsrc="photos[imgSelected].imgUrl" v-if="id==1&&imgSelected!=-1" @left="imgGoLeft" @right="imgGoRight"></image-viewer>
     </div>
 </template>
   
 <script>
 import {boardType, labels} from '../utils/data';
 import MessageCard from '../components/MessageCard.vue';
-import { messageCards } from '../../mock/index';
+import ImageCard from '../components/ImageCard.vue';
+import { messageCards, photoCards } from '../../mock/index';
 import PopUp from '../components/PopUp.vue';
 import CreateCard from '@/components/CreateCard.vue';
+import CreatePhoto from '@/components/CreatePhoto.vue'
 import CardDetail from '@/components/CardDetail.vue';
+import ImageViewer from '@/components/ImageViewer.vue';
 export default {
     data() {
         return {
             boardType,
             labels,
-            id: 0,
             currLabel: -1,
-            cards: messageCards.data,
             addBottomMargin: 30,
             title: '',
             isPopUp: false,
-            cardSelected: -1
+            cardSelected: -1,
+            imgSelected: -1,
         }
     },
     components: {
         MessageCard,
+        ImageCard,
         PopUp,
         CreateCard,
-        CardDetail
+        CreatePhoto,
+        CardDetail,
+        ImageViewer
+    },
+    computed: {
+        id() {
+            return this.$route.query.id
+        },
+        cards() {
+            return messageCards.data
+        },
+        photos() {
+            return photoCards.data
+        }
+    },
+    watch: {
+        id() {
+            this.isPopUp = false
+            this.cardSelected = -1
+            this.imgSelected = -1
+            this.labelSelected = -1
+        }
     },
     methods: {
         selectLabel(e) {
@@ -63,10 +97,19 @@ export default {
         switchPopUp() {
             if(this.isPopUp) {
                 this.cardSelected = -1
-            } else if(this.cardSelected == -1) {
-                this.title = '写留言'
-            } else {
-                this.title = '详情'
+                this.imgSelected = -1
+            } else if(this.id == 0) {
+                if(this.cardSelected == -1) {
+                    this.title = '发布留言'
+                } else {
+                    this.title = '留言详情'
+                }
+            } else if(this.id == 1) {
+                if(this.imgSelected == -1) {
+                    this.title = '发布照片'
+                } else {
+                    this.title = '照片详情'
+                }
             }
             this.isPopUp = !this.isPopUp
         },
@@ -77,6 +120,26 @@ export default {
                 this.cardSelected = e
             }
             this.switchPopUp()
+        },
+        selectImage(e) {
+            if (e == this.imgSelected) {
+                this.imgSelected = -1
+            } else {
+                this.imgSelected = e
+            }
+            this.switchPopUp()
+        },
+        imgGoLeft() {
+            console.log(this.imgSelected)
+            if(this.imgSelected > 0) {
+                this.imgSelected -= 1
+            }
+        },
+        imgGoRight() {
+            console.log(this.imgSelected)
+            if(this.imgSelected < this.photos.length - 1) {
+                this.imgSelected += 1
+            }
         }
     },
     mounted() {
@@ -129,23 +192,36 @@ export default {
         }
     }
 
-    .card-list {
+    .message-list {
         width: 100%;
         box-sizing: border-box;
-        padding: 20px;
+        padding: 50px;
         padding-top: 28px;
         display: grid;
         grid-template-columns: repeat(auto-fill, @card-width);
         justify-content: space-between;
         row-gap: 20px;
 
-        .card {
-            place-self: center;
+        .message {
             cursor: pointer;
         }
 
         .cardSelected {
             border: 1px solid @primary-color
+        }
+    }
+
+    .image-list {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 50px;
+        padding-top: 28px;
+        columns: 5;
+        justify-content: space-between;
+
+        .image {
+            margin-bottom: 8px;
+            cursor: pointer;
         }
     }
 

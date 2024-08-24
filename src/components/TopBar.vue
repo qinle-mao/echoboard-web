@@ -5,8 +5,8 @@
             <p class="logo-text">EchoBoard-回声留言墙</p>
         </div>
         <div class="menu">
-            <board-button class="message-button" size="medium" cat="cprimary">{{ boardType[0].name }}</board-button>
-            <board-button class="photo-button" size="medium" cat="csecondary">{{ boardType[1].name }}</board-button>
+            <board-button class="message-button" size="medium" :cat="id==0?'cprimary':'csecondary'" @click="switchBoard(0)">{{ boardType[0].name }}</board-button>
+            <board-button class="photo-button" size="medium" :cat="id==1?'cprimary':'csecondary'" @click="switchBoard(1)">{{ boardType[1].name }}</board-button>
         </div>
         <div class="user">
             <div class="user-avatar"></div>
@@ -16,7 +16,7 @@
 
 <script>
 import {boardType} from '../utils/data'
-import boardButton from './BoardButton.vue'
+import BoardButton from './BoardButton.vue'
 export default {
     data() {
         return {
@@ -24,7 +24,19 @@ export default {
         }
     },
     components: {
-        boardButton
+        BoardButton
+    },
+    computed: {
+        id() {
+            return this.$route.query.id
+        }
+    },
+    methods: {
+        switchBoard(e) {
+            this.$router.push({
+                query:{id:e}
+            })
+        }
     }
 }
 </script>
