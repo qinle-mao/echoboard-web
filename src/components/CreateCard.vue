@@ -15,7 +15,7 @@
         </div>
         <div class="foot-bar">
             <board-button class="discard" size="large" cat="secondary" @click="closePopUp(0)">放弃</board-button>
-            <board-button class="confirm" size="large" cat="primary">确定</board-button>
+            <board-button class="confirm" size="large" cat="primary" @click="apiTestInsertCard">确定</board-button>
         </div>
     </div>
 </template>
@@ -47,6 +47,23 @@ export default {
         },
         closePopUp(data) {
             this.$emit('close', data)
+        },
+        apiTestInsertCard() {
+            let data={
+                userId: '001',
+                time: new Date(), 
+                content: 'this is a message from web', 
+                label: 2, 
+                name: 'pangpang', 
+                type: 0, 
+                color: 1, 
+                imgUrl: 'www.xxx.com'
+            }
+            this.axios
+                .post('http://localhost:3000/insertcard', data)
+                .then((res) => {
+                    console.log(res)
+                })
         }
     }
 }
