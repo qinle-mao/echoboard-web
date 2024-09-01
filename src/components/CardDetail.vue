@@ -4,43 +4,95 @@
             <p class="revoke">联系墙主撕掉该标签</p>
             <p class="report">举报</p>
         </div>
-        <message-card :message="message" style="width: 100%;"></message-card>
+        <message-card :message="card" style="width: 100%;"></message-card>
         <div class="new-comment-holder">
             <textarea class="new-comment" placeholder="请输入评论..." maxlength="96" v-model="newComment"></textarea>
             <input class="new-name" placeholder="签名" v-model="newName">
-            <board-button class="confirm" size="medium" cat="primary" disabled>提交</board-button>
+            <board-button class="confirm" size="medium" cat="primary" @click="submitComment()">提交</board-button>
         </div>
-        <p class="comments-title">评论 {{ message.comments }}</p>
-        <div class="comment-list" v-for="(e, index) in getComments" :key="index">
-            <div class="user-avatar" :style="{backgroundImage:coloredAvatars[e.avatarUrl]}"></div>
+        <p class="comments-title">评论 {{ card.commentCount[0].COUNT }}</p>
+        <div class="comment-list" v-for="(e, index) in comments" :key="index">
+            <div class="user-avatar" :style="{backgroundImage: coloredAvatars[Number(e.avatarUrl)]}"></div>
             <div class="comment-holder">
                 <div class="content-top">
                     <p class="name">{{ e.name }}</p>
-                    <p class="date">{{ date_1(e.time) }}</p>
+                    <p class="date">{{ convertDate(e.time) }}</p>
                 </div>
                 <div class="content">{{ e.content }}</div>
             </div>
         </div>
+        <p class="load-more-button" v-if="page>=0" @click="loadComments">点击加载更多...</p>
     </div>
 </template>
 
 <script>
 import MessageCard from './MessageCard.vue';
 import BoardButton from './BoardButton.vue';
-import { comments } from '../../mock/index';
 import { coloredAvatars } from '@/utils/data';
-import { date_1 } from '@/utils/methods';
+import { convertDate } from '@/utils/methods';
+import { insertComment, findCommentPage } from '@/api/index';
+// import { comments } from '../../mock/index';
 export default {
     data() {
         return {
             newComment: '',
             newName: '',
             coloredAvatars,
-            date_1
+            convertDate,
+            user: this.$store.state.user,
+            comments: [],
+            page: 0,
+            pageSize: 5
         }
     },
     methods: {
-
+        loadComments() {
+            if(this.page >= 0) {
+                let data = {
+                    page: this.page,
+                    pageSize: this.pageSize,
+                    cardId: this.card.id
+                }
+                console.log(data)
+                findCommentPage(data).then((res) => {
+                    if(res.message.length > 0) {
+                        this.page += 1
+                        this.comments = this.comments.concat(res.message)
+                        if(res.message.length < this.pageSize) {
+                            this.page = -1
+                        }
+                    } else {
+                        this.page = -1
+                    }
+                })
+            }           
+        },
+        submitComment() {
+            if(this.newComment == '') {
+                this.$message({type: 'error', message: '评论不能为空!'})
+            } else {
+                let data = {
+                    id: 0,
+                    cardId: this.card.id,
+                    userId: this.user.id,
+                    time: new Date(),
+                    content: this.newComment,
+                    name: this.newName,
+                    avatarUrl: String(Math.floor(Math.random()*3)),
+                }
+                if(data.name == '') {
+                    data.name = '匿名'
+                }
+                insertComment(data).then((res) => {
+                    data.id = res.message.insertId
+                    this.comments.unshift(data)
+                    this.card.commentCount[0].COUNT += 1
+                    this.$message({type: 'success', message: '评论成功!'})
+                    this.newComment = ''
+                    this.newName = ''
+                })
+            }
+        },
     },
     components: {
         MessageCard,
@@ -52,9 +104,12 @@ export default {
         }
     },
     computed: {
-        getComments() {
-            return comments.data
+        card() {
+            return this.message
         }
+    },
+    mounted() {
+        this.loadComments()
     }
 }
 </script>
@@ -157,6 +212,14 @@ export default {
                 text-align: justify;
             }
         }
+    }
+
+    .load-more-button {
+        color: @gray-1;
+        font-size: 12px;
+        text-align: center;
+        padding-bottom: 20px;
+        cursor: pointer;
     }
 }
 </style>

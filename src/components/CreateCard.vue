@@ -15,7 +15,7 @@
         </div>
         <div class="foot-bar">
             <board-button class="discard" size="large" cat="secondary" @click="closePopUp(0)">放弃</board-button>
-            <board-button class="confirm" size="large" cat="primary" @click="apiTestInsertCard">确定</board-button>
+            <board-button class="confirm" size="large" cat="primary" @click="submit">确定</board-button>
         </div>
     </div>
 </template>
@@ -23,6 +23,7 @@
 <script>
 import { cardColors, cardColorsDark, labels } from '../utils/data'
 import boardButton from './BoardButton.vue';
+import { insertCard } from '@/api/index';
 export default {
     data() {
         return {
@@ -33,10 +34,17 @@ export default {
             labelSelected: 0,
             message: '',
             name: '',
+            imgUrl: null,
+            user: this.$store.state.user
         }
     },
     components: {
         boardButton
+    },
+    computed: {
+        id() {
+            return this.$route.query.id
+        }
     },
     methods: {
         switchColor(e) {
@@ -48,23 +56,54 @@ export default {
         closePopUp(data) {
             this.$emit('close', data)
         },
-        apiTestInsertCard() {
-            let data={
-                userId: '001',
-                time: new Date(), 
-                content: 'this is a message from web', 
-                label: 2, 
-                name: 'pangpang', 
-                type: 0, 
-                color: 1, 
-                imgUrl: 'www.xxx.com'
+        submit() {
+            let data = {
+                id: 0,
+                userId: this.user.id,
+                time: new Date(),
+                content: this.message,
+                label: this.labelSelected,
+                name: this.name,
+                type: this.id,
+                color: this.colorSelected,
+                imgUrl: this.imgUrl,
+                isLiked: [{COUNT: 0}],
+                isReported: [{COUNT: 0}],
+                isRevoked: [{COUNT: 0}],
+                likeCount: [{COUNT: 0}],
+                commentCount:  [{COUNT: 0}]
             }
-            this.axios
-                .post('http://localhost:3000/insertcard', data)
-                .then((res) => {
-                    console.log(res)
+            if(data.name == '') {
+                data.name = '匿名'
+            }
+            if(data.content != '') {
+                insertCard(data).then((res) => {
+                    data.id = res.message.insertId
+                    this.$emit('cardsubmit', data)
+                    this.$message({type: 'success', message: '感谢提交!'})
+                    this.closePopUp(0)
                 })
-        }
+            } else {
+                this.$message({type: 'error', message: '留言不能为空!'})
+            }
+        },
+        // apiTestInsertCard() {
+        //     let data={
+        //         userId: '001',
+        //         time: new Date(), 
+        //         content: 'this is a message from web', 
+        //         label: 2, 
+        //         name: 'pangpang', 
+        //         type: 0, 
+        //         color: 1, 
+        //         imgUrl: 'www.xxx.com'
+        //     }
+        //     this.axios
+        //         .post('http://localhost:3000/insertcard', data)
+        //         .then((res) => {
+        //             console.log(res)
+        //         })
+        // }
     }
 }
 </script>

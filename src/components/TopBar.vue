@@ -2,7 +2,7 @@
     <div class="top-bar">
         <div class="logo">
             <img class="logo-img" src="../assets/imgs/icon.svg">
-            <p class="logo-text">EchoBoard-回声留言墙</p>
+            <p class="logo-text">回声留言墙</p>
         </div>
         <div class="menu">
             <board-button class="message-button" size="medium" :cat="id==0?'cprimary':'csecondary'" @click="switchBoard(0)">{{ boardType[0].name }}</board-button>

@@ -1,8 +1,11 @@
 <template>
     <div class="create-photo">
         <div class="add-image">
-            <span class="iconfont icon-add"></span>
-            <div class="bg"></div>
+            <input type="file" name="file" id="file" @change="show"/>
+            <div class="add-bt">
+                <span class="iconfont icon-add"></span>
+            </div>
+            <div class="img-div"><img :src="tmpUrl" /></div>
         </div>
         <div class="create-card-body" :style="{background: cardColors[5]}">
             <textarea class="message-holder" placeholder="我的留言..." maxlength="96" v-model="message"></textarea>
@@ -16,7 +19,7 @@
         </div>
         <div class="foot-bar">
             <board-button class="discard" size="large" cat="secondary" @click="closePopUp(0)">放弃</board-button>
-            <board-button class="confirm" size="large" cat="primary">确定</board-button>
+            <board-button class="confirm" size="large" cat="primary" @click="submit">确定</board-button>
         </div>
     </div>
 </template>
@@ -24,21 +27,30 @@
 <script>
 import { cardColors, cardColorsDark, labels } from '../utils/data'
 import boardButton from './BoardButton.vue';
+import { getObjectUrl } from '@/utils/methods';
+import { insertCard, photoUpload } from '@/api/index';
 export default {
     data() {
         return {
             cardColors,
             cardColorsDark,
             labels,
-            colorSelected: 0,
+            colorSelected: -1,
             labelSelected: 0,
             message: '',
             name: '',
-            imgUrl: ''
+            tmpUrl: '',
+            imgUrl: null,
+            user: this.$store.state.user
         }
     },
     components: {
         boardButton
+    },
+    computed: {
+        id() {
+            return this.$route.query.id
+        }
     },
     methods: {
         switchLabel(e) {
@@ -46,6 +58,52 @@ export default {
         },
         closePopUp(data) {
             this.$emit('close', data)
+        },
+        show() {
+            this.tmpUrl  = getObjectUrl(document.getElementById('file').files[0])
+        },
+        submit() {
+            let data = {
+                userId: this.user.id,
+                time: new Date(),
+                content: this.message,
+                label: this.labelSelected,
+                name: this.name,
+                type: this.id,
+                color: this.colorSelected,
+                imgUrl: this.imgUrl,
+                isLiked: [{COUNT: 0}],
+                isReported: [{COUNT: 0}],
+                isRevoked: [{COUNT: 0}],
+                likeCount: [{COUNT: 0}],
+                commentCount:  [{COUNT: 0}]
+            }
+            if(data.name == '') {
+                data.name = '匿名'
+            }
+            // upload photo
+            let file = document.getElementById('file')
+            if(file.files.length > 0) {
+                if(data.content != '') {
+                    let formData = new FormData()
+                    formData.append('photo', file.files[0])
+                    photoUpload(formData).then((res) => {
+                        console.log(res)
+                        data.imgUrl = res
+                    })
+                    setTimeout(()=>{
+                        insertCard(data).then(() => {
+                            this.$emit('photosubmit', data)
+                            this.$message({type: 'success', message: '感谢提交!'})
+                            this.closePopUp(0)
+                        })
+                    }, 800)
+                } else {
+                    this.$message({type: 'error', message: '留言不能为空!'})
+                }
+            } else {
+                this.$message({type: 'error', message: '照片不能为空!'})
+            }
         },
     }
 }
@@ -57,35 +115,53 @@ export default {
 
     .add-image {
         width: 100%;
-        height: 150px;
-        border: 1px solid @gray-3;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        height: 200px;
+        padding-bottom: 20px;
         position: relative;
 
-        .iconfont {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: @gray-3;
-            font-size: 25px;
-            color: @gray-9;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .bg {
-            width: 100%;
-            height: 100%;
+        #file {
             position: absolute;
             top: 0;
             left: 0;
-            background-image: none;
-            z-index: -1;
+            width: 64px;
+            height: 64px;
+            opacity: 0;
+            cursor: pointer;
         }
+
+        .add-bt {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid @gray-3;
+            background: rgba(212, 212, 212, 0.35);
+            cursor: pointer;
+
+            .iconfont {
+                font-size: 24px;
+                color: @gray-0;
+            }
+        }
+
+        .img-div {
+            max-height: 200px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+
+            img {
+                width: 100%;
+            }
+        }
+
     }
 
     .create-card-body {

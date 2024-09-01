@@ -58,6 +58,13 @@ npm install less less-loader --save
 npm install axios vue-axios --save
 ```
 
+```shell
+npm install lottie-web --save
+```
+
+```shell
+npm install async-mutex --save
+```
 ### 4. Define Global Style
 
 style reference: https://gitee.com/ant-design/ant-design
@@ -194,3 +201,8 @@ css transition
 ```shell
 npm install mockjs --save
 ```
+### Define API
+utils -> env.js, utils -> axios.js, api -> index.js
+
+### Lottei Animation
+https://lottiefiles.com/featured lottie-web

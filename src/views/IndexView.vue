@@ -11,6 +11,8 @@
 <script>
 import topBar from '../components/TopBar.vue'
 import footBar from '../components/FootBar.vue'
+import { getUserIp } from '@/api/index'
+
 export default {
     data() {
 
@@ -23,10 +25,17 @@ export default {
 
     },
     created() {
-        
+        this.getUser()
     },
     methods: {
-
+        getUser() {
+            getUserIp().then((res) => {
+                let user = {
+                    id: res.ip
+                }
+                this.$store.commit('getUser', user)
+            })
+        }
     },
 }
 </script>
@@ -35,11 +44,11 @@ export default {
 .index-view {
     .bg-video {
         width: 100%;
-        opacity: 0.25;
+        opacity: 0.15;
         position: fixed;
         top: 0;
         z-index: -1;
-        visibility: hidden;
+        // visibility: hidden;
     }
 }
 </style>

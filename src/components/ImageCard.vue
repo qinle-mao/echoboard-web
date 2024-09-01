@@ -1,33 +1,63 @@
 <template>
     <div class="image-card">
-        <img class="image" :src="require('../../static/' + content.imgUrl + '.jpg')" />
-        <div class="img-bg"></div>
+        <img class="image" :src="baseImgPath + card.imgUrl"/>
+        <div class="img-bg" @click="toDetail"></div>
         <div class="img-likes">
-            <span class="iconfont icon-heart"></span>
-            <span class="value">{{ content.likes }}</span>
+            <span class="iconfont icon-heart" :class="{isLiked:card.isLiked[0].COUNT>0}" @click="addLike"></span>
+            <span class="value">{{ card.likeCount[0].COUNT }}</span>
         </div>
     </div>
 </template>
 
 <script>
 import { labels } from '@/utils/data';
+import { baseImgPath } from '../utils/env';
+import { insertFeedback } from '@/api//index';
 export default {
     data() {
         return {
             labels,
+            baseImgPath,
+            user: this.$store.state.user
         }
     },
     props: {
-        content: {
+        message: {
             default: {}
         }
     },
+    computed: {
+        card() {
+            return this.message
+        }
+    },
+    methods: {
+        toDetail() {
+            this.$emit('toDetail')
+        },
+        addLike() {
+            if(this.card.likeCount[0].COUNT == 0) {
+                let data = {
+                    cardId: this.card.id,
+                    userId: this.user.id,
+                    time: new Date(),
+                    type: 0
+                }
+                console.log(data)
+                insertFeedback(data).then(() => {
+                    this.card.likeCount[0].COUNT += 1
+                    this.card.isLiked[0].COUNT += 1
+                })
+            }
+        }
+    }
 }
 </script>
 
 <style lang="less" scoped>
 .image-card {
     position: relative;
+    cursor: pointer;
 
     .image {
         width: 100%;
@@ -73,6 +103,10 @@ export default {
             &:hover {
                 color: @liked-color;
             }
+        }
+
+        .isLiked {
+            color: @liked-color;
         }
     }
 

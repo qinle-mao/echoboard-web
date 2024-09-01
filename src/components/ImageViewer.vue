@@ -5,7 +5,7 @@
         <div class="switch" @click="goLeft">
             <span class="iconfont icon-left"></span>
         </div>
-        <img :src="require('../../static/' + imgsrc + '.jpg')">
+        <img :src="baseImgPath + imgsrc">
         <div class="switch" @click="goRight">
             <span class="iconfont icon-right"></span>
         </div>
@@ -14,9 +14,11 @@
 </template>
 
 <script>
+import { baseImgPath } from '../utils/env';
 export default {
     data() {
         return {
+            baseImgPath,
             windowWidth: window.screen.width
         }
     },
